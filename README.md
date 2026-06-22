@@ -1,23 +1,20 @@
 # HappyBDay - Birthday Reminder & WhatsApp Sender 🎂📱
-
-HappyBDay este o aplicație nativă Android care te ajută să nu mai uiți niciodată de zilele de naștere ale celor dragi. Aplicația îți permite să salvezi detalii despre sărbătoriți, să programezi alarme exacte și, la momentul ales, îți trimite o notificare. Printr-o simplă apăsare pe notificare, ești redirecționat automat pe WhatsApp cu mesajul tău personalizat gata de a fi trimis!
-
-## ✨ Funcționalități Principale (Features)
-* **Gestionare Zile de Naștere (CRUD):** Adaugă, editează și vizualizează persoanele (Nume, Telefon, Dată, Oră, Mesaj personalizat).
-* **Atașamente Media:** Posibilitatea de a atașa o poză sau un video (din galerie) asociat mesajului.
-* **Filtrare:** Filtrează ușor lista de sărbătoriți în funcție de luna anului.
-* **Notificări Programate:** Folosește `AlarmManager` pentru a declanșa notificări locale (Push Notifications) exact la ora și data setată.
-* **Integrare WhatsApp (Direct Message):** La apăsarea notificării, aplicația folosește un `Intent` pentru a deschide automat WhatsApp, completând numărul de telefon și mesajul text predefinit.
-* **Stocare Locală offline:** Toate datele sunt salvate sigur, direct pe telefon, folosind baza de date `SQLite`.
-
-## 🛠️ Tehnologii și Arhitectură (Tech Stack)
-* **Limbaj:** [Kotlin](https://kotlinlang.org/)
-* **Platformă:** Android (Min SDK: 26 | Target SDK: 36)
+HappyBDay is a native Android app that helps you never forget the birthdays of the people you love again. The app lets you save details about the people you want to celebrate, schedule exact alarms, and at the chosen moment it sends you a notification. With a simple tap on the notification, you're automatically redirected to WhatsApp with your personalized message ready to be sent!
+## ✨ Main Features
+* **Birthday Management (CRUD):** Add, edit, and view people (Name, Phone, Date, Time, custom message).
+* **Media Attachments:** Ability to attach a photo or video (from the gallery) associated with the message.
+* **Filtering:** Easily filter the list of celebrants by month of the year.
+* **Scheduled Notifications:** Uses `AlarmManager` to trigger local notifications (Push Notifications) at the exact date and time set.
+* **WhatsApp Integration (Direct Message):** When the notification is tapped, the app uses an `Intent` to automatically open WhatsApp, pre-filling the phone number and the predefined text message.
+* **Offline Local Storage:** All data is securely saved directly on the phone, using the `SQLite` database.
+## 🛠️ Tech Stack & Architecture
+* **Language:** [Kotlin](https://kotlinlang.org/)
+* **Platform:** Android (Min SDK: 26 | Target SDK: 36)
 * **UI:** XML, `RecyclerView`, Material Design
-* **Bază de date:** `SQLite` (prin `SQLiteOpenHelper`)
-* **Componente de sistem:**
-  * `BroadcastReceiver` (pentru ascultarea alarmelor)
-  * `AlarmManager` (pentru programarea exactă pe Android 12+)
-  * `NotificationManager` (pentru afișarea alertelor)
-  * Implicit Intents (pentru URL-ul API-ului WhatsApp)
-* **Permisiuni folosite:** `POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`, `SEND_SMS`.
+* **Database:** `SQLite` (via `SQLiteOpenHelper`)
+* **System components:**
+  * `BroadcastReceiver` (for listening to alarms)
+  * `AlarmManager` (for exact scheduling on Android 12+)
+  * `NotificationManager` (for displaying alerts)
+  * Implicit Intents (for the WhatsApp API URL)
+* **Permissions used:** `POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`, `SEND_SMS`.
