@@ -50,7 +50,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "Birthdays.db", nul
     fun getBirthdaysByMonth(month: Int): List<Birthday> {
         val list = mutableListOf<Birthday>()
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM birthdays WHERE month = ?", arrayOf(month.toString()))
+        val cursor = db.rawQuery("SELECT * FROM birthdays WHERE month = ? ORDER BY name ASC", arrayOf(month.toString()))
         if (cursor.moveToFirst()) {
             do {
                 list.add(Birthday(
@@ -63,5 +63,10 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "Birthdays.db", nul
         }
         cursor.close()
         return list
+    }
+
+    fun deleteBirthday(id: Int): Int {
+        val db = this.writableDatabase
+        return db.delete("birthdays", "id = ?", arrayOf(id.toString()))
     }
 }

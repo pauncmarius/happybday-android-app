@@ -11,10 +11,13 @@ import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -129,16 +132,40 @@ class MainActivity : AppCompatActivity() {
 
         val etName = dialogView.findViewById<EditText>(R.id.etName)
         val etPhone = dialogView.findViewById<EditText>(R.id.etPhone)
+        val spinnerCountry = dialogView.findViewById<Spinner>(R.id.spinnerCountry)
         val etDay = dialogView.findViewById<EditText>(R.id.etDay)
         val etMonth = dialogView.findViewById<EditText>(R.id.etMonth)
         val etHour = dialogView.findViewById<EditText>(R.id.etHour)
         val etMinute = dialogView.findViewById<EditText>(R.id.etMinute)
         val etMessage = dialogView.findViewById<EditText>(R.id.etMessage)
         val btnSave = dialogView.findViewById<Button>(R.id.btnSaveBirthday)
+        val btnDelete = dialogView.findViewById<Button>(R.id.btnDeleteBirthday)
         val btnPickMedia = dialogView.findViewById<Button>(R.id.btnPickMedia)
         tvMediaStatus = dialogView.findViewById(R.id.tvMediaStatus)
         ivMediaPreview = dialogView.findViewById(R.id.ivMediaPreview)
         btnClearMedia = dialogView.findViewById(R.id.btnClearMedia)
+
+        // Setup Spinner
+        val countries = arrayOf("România (+40)", "UK (+44)", "Germania (+49)", "Italia (+39)", "Franța (+33)", "Țările de Jos (+31)")
+        val prefixes = arrayOf("+40", "+44", "+49", "+39", "+33", "+31")
+        val countryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, countries)
+        countryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerCountry.adapter = countryAdapter
+
+        spinnerCountry.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val currentText = etPhone.text.toString()
+                // Doar dacă e gol sau are deja un prefix din listă (pentru a nu șterge numărul la editare)
+                if (currentText.isEmpty() || prefixes.any { currentText.startsWith(it) }) {
+                    // Dacă e editare, încercăm să nu suprascriem dacă deja are prefixul corect
+                    if (!currentText.startsWith(prefixes[position])) {
+                        etPhone.setText(prefixes[position])
+                        etPhone.setSelection(etPhone.text.length) // Cursor la final
+                    }
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
         // Resetăm variabila la deschiderea formularului
         currentSelectedMediaUri = existingBirthday?.mediaUri ?: ""
@@ -154,6 +181,17 @@ class MainActivity : AppCompatActivity() {
             etMinute.setText(it.minute.toString())
             etMessage.setText(it.message)
             btnSave.text = "Actualizează"
+            btnDelete.visibility = View.VISIBLE
+        }
+
+        btnDelete.setOnClickListener {
+            existingBirthday?.let {
+                dbHelper.deleteBirthday(it.id)
+                cancelAlarm(it.id)
+                refreshList()
+                alertDialog.dismiss()
+                Toast.makeText(this, "Sărbătorit șters!", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Când apeși "Alege Media", se deschide galeria pentru orice tip de media
@@ -177,6 +215,19 @@ class MainActivity : AppCompatActivity() {
                 val message = etMessage.text.toString()
 
                 if (name.isNotEmpty() && phone.isNotEmpty() && message.isNotEmpty()) {
+                    if (month !in 1..12) {
+                        Toast.makeText(this, "Luna trebuie să fie între 1 și 12!", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+                    if (day !in 1..31) {
+                        Toast.makeText(this, "Ziua trebuie să fie între 1 și 31!", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+                    if (hour !in 0..23 || minute !in 0..59) {
+                        Toast.makeText(this, "Ora sau minutul sunt invalide!", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
                     if (existingBirthday == null) {
                         val newBirthday = Birthday(0, name, phone, month, day, hour, minute, message, currentSelectedMediaUri)
                         val id = dbHelper.addBirthday(newBirthday)
@@ -202,8 +253,13 @@ class MainActivity : AppCompatActivity() {
     private fun refreshList() {
         val monthStr = etMonthFilter.text.toString()
         if (monthStr.isNotEmpty()) {
-            val list = dbHelper.getBirthdaysByMonth(monthStr.toInt())
-            adapter.updateData(list)
+            val month = monthStr.toIntOrNull()
+            if (month != null && month in 1..12) {
+                val list = dbHelper.getBirthdaysByMonth(month)
+                adapter.updateData(list)
+            } else {
+                Toast.makeText(this, "Introdu o lună validă (1-12)!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -244,5 +300,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+    }
+
+    private fun cancelAlarm(id: Int) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, NotificationReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        alarmManager.cancel(pendingIntent)
     }
 }

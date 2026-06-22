@@ -16,11 +16,24 @@
             android:hint="Nume Sărbătorit"
             android:inputType="textPersonName" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Selectează Țara:"
+            android:layout_marginTop="8dp"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/spinnerCountry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp" />
+
         <EditText
             android:id="@+id/etPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Număr de Telefon (pt. SMS)"
+            android:hint="Număr de Telefon"
             android:inputType="phone" />
 
         <LinearLayout
@@ -127,6 +140,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Salvează și Programează" />
+
+        <Button
+            android:id="@+id/btnDeleteBirthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Șterge Sărbătorit"
+            android:backgroundTint="#FF5252"
+            android:textColor="@android:color/white"
+            android:visibility="gone" />
 
     </LinearLayout>
 </ScrollView>

@@ -20,10 +20,7 @@ class NotificationReceiver : BroadcastReceiver() {
         val message = intent.getStringExtra("message") ?: ""
         val mediaUriStr = intent.getStringExtra("mediaUri") ?: ""
 
-        var cleanPhone = phone.replace("\\D".toRegex(), "")
-        if (cleanPhone.startsWith("0")) {
-            cleanPhone = "40" + cleanPhone.substring(1)
-        }
+        val cleanPhone = phone.replace("\\D".toRegex(), "")
 
         val whatsappIntent: Intent
         val notificationText: String
