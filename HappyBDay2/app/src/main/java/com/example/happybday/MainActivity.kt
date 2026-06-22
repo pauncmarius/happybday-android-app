@@ -175,6 +175,13 @@ class MainActivity : AppCompatActivity() {
         existingBirthday?.let {
             etName.setText(it.name)
             etPhone.setText(it.phone)
+
+            // FIX: sincronizează spinner-ul cu prefixul numărului existent
+            val prefixIndex = prefixes.indexOfFirst { p -> it.phone.startsWith(p) }
+            if (prefixIndex != -1) {
+                spinnerCountry.setSelection(prefixIndex)
+            }
+
             etDay.setText(it.day.toString())
             etMonth.setText(it.month.toString())
             etHour.setText(it.hour.toString())
